@@ -1,4 +1,4 @@
-**Static Website Hosting on AWS with Amazon S3 and CloudFront**
+# **Static Website Hosting on AWS with Amazon S3 and CloudFront**
 
 **Overview**
 
@@ -24,7 +24,7 @@ Public Amazon S3 bucket
 
 When a visitor requests a page, CloudFront can serve a cached copy. When it needs to retrieve content from the origin, it requests the file from S3 and caches it according to the distribution's cache settings and the object's caching headers.
 
-**AWS Services**
+**AWS Services Used**
 
 | Service           | Purpose                                                                              |
 | ----------------- | ------------------------------------------------------------------------------------ |
@@ -35,25 +35,25 @@ This setup serves static content; it does not execute server-side application co
 
 **Project Details**
 
-Replace the placeholders below with your actual deployment details. Do not include AWS credentials.
-
 | Setting                    | Value                                               |
 | -------------------------- | --------------------------------------------------- |
-| S3 bucket name             | `<YOUR_BUCKET_NAME>`                                |
-| AWS Region                 | `<YOUR_AWS_REGION>`                                 |
-| CloudFront distribution ID | `<YOUR_DISTRIBUTION_ID>`                            |
-| Website URL                | `https://<YOUR_DISTRIBUTION_DOMAIN>.cloudfront.net` |
+| S3 bucket name             | `zohas-static-website`                              |
+| AWS Region                 | `us-east-1`                                         |
+| CloudFront distribution ID | `EUYD8LR6ADRI2`                                     |
+| Website URL                | `https://d24823iapi8rxc.cloudfront.net`             |
 | CloudFront origin type     | `<S3_REST_ENDPOINT_OR_S3_WEBSITE_ENDPOINT>`         |
 
 **Deployment Guide**
 
-The following steps describe how to reproduce a public-S3-and-CloudFront deployment. Match the origin configuration to the endpoint actually used in your distribution.
+The following steps describe how to reproduce a public-S3-and-CloudFront deployment.
 
 **1\. Create an S3 Bucket**
 
 1. Open Amazon S3 in the AWS Management Console.
 2. Create a bucket with a globally unique name in your chosen AWS Region.
 3. Use this bucket only for files intended to be publicly accessible.
+
+<img width="1766" height="1046" alt="image" src="https://github.com/user-attachments/assets/5af421d3-156f-425a-807f-8374019e38ce" />
 
 **2\. Upload the Website Files**
 
@@ -71,6 +71,7 @@ website/
 │   └── script.js
 └── images/
 ```
+<img width="1686" height="1002" alt="image" src="https://github.com/user-attachments/assets/08a7097c-8c39-4055-bf48-91ac161b1c1f" />
 
 Upload the contents of the website directory so that index.html is at the bucket root. If the site requires a build step, upload the generated build output rather than the source project.
 
@@ -78,24 +79,27 @@ Upload the contents of the website directory so that index.html is at the bucket
 
 For this public-bucket implementation, configure the applicable bucket- and account-level S3 Block Public Access settings to permit the intended public bucket policy. Change only the settings required for this deployment; do not disable account-wide protections without reviewing the impact on other buckets.
 
-The following example grants anonymous read access to all objects in the bucket. Replace &lt;YOUR_BUCKET_NAME&gt; before applying it:
+The following example grants anonymous get access to all objects in the bucket.
 
 ```
 {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "PublicReadWebsiteObjects",
+      "Sid": "PublicReadGetObject",
       "Effect": "Allow",
       "Principal": "*",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::<YOUR_BUCKET_NAME>/*"
+      "Action": [
+          "s3:GetObject"
+      ],
+      "Resource": [
+          "arn:aws:s3:::zohas-static-website/*"
+      ]
     }
   ]
 }
 ```
-
-This policy permits object reads. It does not grant public upload, deletion, or bucket-listing permissions. Avoid public write access and do not upload credentials, private documents, or other sensitive data.
+<img width="1670" height="988" alt="image" src="https://github.com/user-attachments/assets/b10f6cd5-c2aa-4eb6-a018-6a4ce678442b" />
 
 **4\. Choose the Correct Origin Endpoint**
 
@@ -130,6 +134,8 @@ If using the REST endpoint, select the bucket as the S3 origin and configure pub
 7. Use the default CloudFront certificate for the generated cloudfront.net hostname.
 8. Save the distribution and wait for its configuration to deploy.
 
+<img width="1764" height="1040" alt="image" src="https://github.com/user-attachments/assets/1b8ab005-8ca2-450f-b5fd-55dce1ea2b18" />
+
 For a website endpoint origin, CloudFront must connect to S3 over HTTP. Visitors can still connect to CloudFront over HTTPS, but that does not make the CloudFront-to-S3 connection HTTPS.
 
 **6\. Test the Website**
@@ -137,7 +143,7 @@ For a website endpoint origin, CloudFront must connect to S3 over HTTP. Visitors
 Open:
 
 ```
-https://<YOUR_DISTRIBUTION_DOMAIN>.cloudfront.net
+https://d24823iapi8rxc.cloudfront.net
 ```
 
 Verify that:
